@@ -1,10 +1,12 @@
-DFSparks Library
+TG Vest
 ================
 
-DFSparks is a library for building wearable electronics that synchronizes 
-with DiscoFish art car. The target platform is ESP8266 (though it should be
-trivial to modify it for any Arduino-compatible board). There's also a 
-PC version that we use on the fish itself.
+TG Vest is the code currently running on TechnoGecko vests.
+It is mostly based on DFSparks, its predecessor for the DiscoFish.
+The target platform is ESP8266.
+
+You'll want to flash this file onto your device:
+tgvest/examples/Vest/Vest.ino
 
 Using with Arduino IDE
 ----------------------------
@@ -40,28 +42,6 @@ To compile:
 You can use extras/test-server.py to test how your device
 synchronizes with the server.
 
-Building PC library (Ubuntu)
-----------------------------
-
-    sudo apt-get install -y make
-    sudo apt-get install -y cmake
-	git clone git@bitbucket.org:discofish/dfsparks.git
-	mkdir dfsparks/build
-	cd dfsparks/build && cmake .. && make 
-	sudo make install
-
-The last step installs the library system-wide, so that dfplayer build can
-find it.
-
-Building demo app (Ubuntu)
-----------------------------
-
-Build PC library as explained above, then install GLFW and build the demo:
-
-	pushd /tmp && git clone https://github.com/glfw/glfw --depth 1 &&\
-		cd glfw && cmake . && make && sudo make install && popd 
-    cd dfsparks/build && make dfsparks_demo && ./dfspaks_demo
- 
 
 Adding new effects
 ----------------------------
