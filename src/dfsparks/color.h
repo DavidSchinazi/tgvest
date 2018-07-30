@@ -6,11 +6,13 @@
 namespace dfsparks {
 
 /**
- * Create color using RGB channel values
+ * Create color using RGBA channel values
  *
  * @param   r red channel value, [0, 255]
  * @param   g green channel value, [0, 255]
  * @param   b blue channel value, [0, 255]
+ * @param   a alpha (transparency) channel value, [0, 255]. Zero means fully
+ *            transparent, 255 - fully opaque.
  * @return  encoded color
  */
 inline uint32_t rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -19,13 +21,11 @@ inline uint32_t rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
 /**
- * Create color using RGBA channel values
+ * Create color using RGB channel values
  *
  * @param   r red channel value, [0, 255]
  * @param   g green channel value, [0, 255]
  * @param   b blue channel value, [0, 255]
- * @param   a alpha (transparency) channel value, [0, 255]. Zero means fully
- *            transparent, 255 - fully opaque.
  * @return  encoded color
  */
 inline uint32_t rgb(uint8_t r, uint8_t g, uint8_t b) {

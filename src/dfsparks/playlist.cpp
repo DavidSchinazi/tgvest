@@ -31,7 +31,7 @@ struct EffectInfo {
 Repertoire::Repertoire(Pixels& pixels) {
   EffectInfo* all[] = {
     new EffectInfo(new NullEffect(), "_none"),
-    new EffectInfo(new Blink(), "slowblink"),
+//    new EffectInfo(new Blink(), "slowblink"), BLINKING RED AND GREEN IS NOT COOL
     new EffectInfo(new Rainbow(), "radiaterainbow"),
     new EffectInfo(new Threesine(), "threesine"),
     new EffectInfo(new Plasma(), "plasma"),

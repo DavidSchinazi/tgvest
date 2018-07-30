@@ -49,14 +49,20 @@ public:
   void showStatus(bool show = true) { showStatus_ = show; }
   bool isShowingStatus() const { return showStatus_; }
 
+  void handleSpecial() { specialMode_++; }
+  void stopSpecial() { specialMode_ = 0; }
+
 protected:
   Effect* findEffect(const char *name) const;
   
   void doPlay(Effect &ef, int priority);
   void doPlay(Effect &ef, int priority, int32_t elapsed, int32_t remaining, uint8_t cycleHue);
 
+  uint8_t specialMode_ = 0;
+
 private:
   virtual void doRenderStatus();
+  virtual void doRenderSpecial();
 
   Repertoire repertoire_;
   Playlist playlist_;
@@ -95,6 +101,7 @@ private:
   void onReceived(Network &network, const Message::Frame &frame) final;
   void onStatusChange(Network &) final{};
   void doRenderStatus() final;
+  void doRenderSpecial() final;
 
   enum Role {STANDALONE, SLAVE, MASTER} mode_ = SLAVE;
   Network &netwrk;

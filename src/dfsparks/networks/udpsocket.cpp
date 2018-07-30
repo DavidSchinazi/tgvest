@@ -87,7 +87,7 @@ int UdpSocketNetwork::doReceive(void *buf, size_t bufsize) {
 
   sockaddr_in serveraddr;
   socklen_t serverlen = sizeof(serveraddr);
-  int n = recvfrom(fd, buf, bufsize, 0,
+  ssize_t n = recvfrom(fd, buf, bufsize, 0,
                    reinterpret_cast<sockaddr *>(&serveraddr), &serverlen);
   if (n < 0) {
     if (errno == EWOULDBLOCK || errno == EAGAIN) {
@@ -96,7 +96,7 @@ int UdpSocketNetwork::doReceive(void *buf, size_t bufsize) {
     error("can't receive data from socket %d: %s", fd, strerror(errno));
     goto err; // error reading
   }
-  return n;
+  return (int)n;
 err:
   return -1;
 }
@@ -116,7 +116,7 @@ int UdpSocketNetwork::doBroadcast(void *buf, size_t bufsize) {
           udp_port, fd, strerror(errno));
     return -1;
   }
-  return bufsize;
+  return (int)bufsize;
 }
 
 } // namespace dfsparks
