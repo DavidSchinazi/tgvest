@@ -139,73 +139,82 @@ void NetworkPlayer::doRenderStatus() {
 }
 
 void NetworkPlayer::doRenderSpecial() {
-  int32_t t = timeMillis();
-  const bool blink = ((t % 1000) < 500);
-#if 1
-  const int32_t pixelCount = pixels().count();
-  const int32_t w = pixels().width();
-  const int32_t h = pixels().height();
-  for (int i = 0; i < pixelCount; i++) {
-    int32_t x, y;
-    pixels().coords(i, &x, &y);
-    const int32_t black = 0, green = 0x00ff00, blue = 0x0000ff, red = 0xff0000;
-    const int32_t yellow = green | red, purple = red | blue, white = 0xffffff;
-    const int32_t orange = 0xffcc00;
-
-    int32_t yColors[20] = {0, red, green, blue, yellow,
-      purple, orange, white, blue, yellow,
-      red, purple, green, orange,
-      white, yellow, purple, green, blue, red};
-
-    int32_t col = 0;
-
-    if (y >= 0 && y < 20) {
-      col = yColors[y];
-    }
-
-    if (x == 0 || x == 6 || x == 14) {
-      col &= 0xff7f7f;
-    } else if (x == 5 || x == 13 || x == 19) {
-      col &= 0x7fff7f;
-    }
-
-    if (blink) {
-      if (y == 1 &&
-          (x == 0 || x == 6 || x == 14)) {
-        col = 0;
-      } else if (y == 2 &&
-                 (x == 5 || x == 13 || x == 19)) {
-        col = 0;
-      }
-    }
-
-    pixels().setColor(i, col);
-
-//    if (y == 20) {
-//      pixels().setColor(i, 0x00ff00); // green
-//    } else if (y == 19) {
-//      pixels().setColor(i, 0x0000ff); // blue
-//    } else if (y == 18) {
-//      pixels().setColor(i, 0xff0000); // red
-//    } else {
-//      pixels().setColor(i, 0x000000); // black
-//    }
-
-//    const uint32_t blue = (255 * x / w) & 0xff;
-//    const uint32_t red = (255 * y / h) & 0xff;
-//    pixels().setColor(i, blue | (red << 16));
 
 
-
-//    if (x == 0 || x == w) {
-//      pixels().setColor(i, 0x00ff00); // green
-//    } else if (y == 0 || y == h) {
-//      pixels().setColor(i, 0x0000ff); // blue
-//    } else {
-//      pixels().setColor(i, 0xff0000); // red
-//    }
+  if (specialMode_ > 6) {
+    specialMode_ = 1;
   }
-#elif 1
+
+  if (specialMode_ == 1) {
+
+    int32_t t = timeMillis();
+    const bool blink = ((t % 1000) < 500);
+    const int32_t pixelCount = pixels().count();
+    const int32_t w = pixels().width();
+    const int32_t h = pixels().height();
+    for (int i = 0; i < pixelCount; i++) {
+      int32_t x, y;
+      pixels().coords(i, &x, &y);
+      const int32_t black = 0, green = 0x00ff00, blue = 0x0000ff, red = 0xff0000;
+      const int32_t yellow = green | red, purple = red | blue, white = 0xffffff;
+      const int32_t orange = 0xffcc00;
+
+      int32_t yColors[20] = {0, red, green, blue, yellow,
+        purple, orange, white, blue, yellow,
+        red, purple, green, orange,
+        white, yellow, purple, green, blue, red};
+
+      int32_t col = 0;
+
+      if (y >= 0 && y < 20) {
+        col = yColors[y];
+      }
+
+      if (x == 0 || x == 6 || x == 14) {
+        col &= 0xff7f7f;
+      } else if (x == 5 || x == 13 || x == 19) {
+        col &= 0x7fff7f;
+      }
+
+      if (blink) {
+        if (y == 1 &&
+            (x == 0 || x == 6 || x == 14)) {
+          col = 0;
+        } else if (y == 2 &&
+                   (x == 5 || x == 13 || x == 19)) {
+          col = 0;
+        }
+      }
+
+      pixels().setColor(i, col);
+
+      //    if (y == 20) {
+      //      pixels().setColor(i, 0x00ff00); // green
+      //    } else if (y == 19) {
+      //      pixels().setColor(i, 0x0000ff); // blue
+      //    } else if (y == 18) {
+      //      pixels().setColor(i, 0xff0000); // red
+      //    } else {
+      //      pixels().setColor(i, 0x000000); // black
+      //    }
+
+      //    const uint32_t blue = (255 * x / w) & 0xff;
+      //    const uint32_t red = (255 * y / h) & 0xff;
+      //    pixels().setColor(i, blue | (red << 16));
+
+
+
+      //    if (x == 0 || x == w) {
+      //      pixels().setColor(i, 0x00ff00); // green
+      //    } else if (y == 0 || y == h) {
+      //      pixels().setColor(i, 0x0000ff); // blue
+      //    } else {
+      //      pixels().setColor(i, 0xff0000); // red
+      //    }
+    }
+    return;
+  }
+#if 0
   const int32_t pixelCount = pixels().count();
   const int32_t greenPixel = (t / 100) % pixelCount;
   for (int32_t i = 0; i < pixelCount; ++i) {
@@ -215,29 +224,26 @@ void NetworkPlayer::doRenderSpecial() {
       pixels().setColor(i, 0xff0000); // red
     }
   }
-#else
+#endif // 0
   uint32_t color = 0x000000; // black
-
-  if (specialMode_ > 6) {
-    specialMode_ = 1;
-  }
   switch(specialMode_) {
-    case 1:
+    case 2:
       color = 0x000000; // black
       break;
-    case 2:
-//      color = 0xffffff; // white
-      color = 0xff00ff; // white
-      break;
     case 3:
-      color = 0xff0000; // red
+      color = 0xffffff; // white
+      // color = 0xff00ff; // purple
       break;
     case 4:
-      color = 0x00ff00; // green
+      color = 0xff0000; // red
       break;
     case 5:
+      color = 0x00ff00; // green
+      break;
+    case 6:
       color = 0x0000ff; // blue
       break;
+#if 0
     case 6: // SOS in Morse Code
       const char *const morseStr = "1010100011101110111000101010000000";
       const uint32_t morseStrLen = sizeof(morseStr) - 1;
@@ -247,9 +253,10 @@ void NetworkPlayer::doRenderSpecial() {
         color = 0xffffff;
       }
       break;
+#endif // 0
   }
   pixels().fill(color);
-#endif
+
 }
 
 void NetworkPlayer::onReceived(Network&, const Message::Frame& fr) {
