@@ -3,6 +3,10 @@
 #include "dfsparks/effect.h"
 #include "dfsparks/playlist.h"
 
+#ifndef CAMPSIGN
+#define CAMPSIGN 0
+#endif // CAMPSIGN
+
 namespace dfsparks {
 
 struct EffectInfo;

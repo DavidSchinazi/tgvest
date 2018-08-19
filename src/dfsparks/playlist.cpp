@@ -30,15 +30,19 @@ struct EffectInfo {
 
 Repertoire::Repertoire(Pixels& pixels) {
   EffectInfo* all[] = {
-    new EffectInfo(new NullEffect(), "_none"),
+//    new EffectInfo(new NullEffect(), "_none"),
 //    new EffectInfo(new Blink(), "slowblink"), BLINKING RED AND GREEN IS NOT COOL
     new EffectInfo(new Rainbow(), "radiaterainbow"),
+#if !CAMPSIGN
     new EffectInfo(new Threesine(), "threesine"),
+#endif // !CAMPSIGN
     new EffectInfo(new Plasma(), "plasma"),
+#if !CAMPSIGN
     new EffectInfo(new Rider(), "rider"),
     new EffectInfo(new Flame(pixels), "flame"),
     new EffectInfo(new Glitter(), "glitter"),
     new EffectInfo(new Slantbars(), "slantbars")
+#endif // !CAMPSIGN
   };
   size_ = sizeof(all)/sizeof(*all);
   effects_ = new EffectInfo*[size_];
