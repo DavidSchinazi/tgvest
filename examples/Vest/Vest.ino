@@ -224,12 +224,25 @@ const int pixelMap[] = {
 //#define STARTBRIGHTNESS 40
 //#define BRIGHTNESS_INCREASE 51
 
+#ifndef BRIGHTER
+#define BRIGHTER 1
+#endif // BRIGHTER
+
 // this ordering is silly but we need the highest to be last
 // in case it blows the fuse in the USB battery pack
-#ifndef FIRST_BRIGHTNESS
-#define FIRST_BRIGHTNESS 32
-#endif // FIRST_BRIGHTNESS
+
+#if BRIGHTER
+#  ifndef FIRST_BRIGHTNESS
+#  define FIRST_BRIGHTNESS 64
+#  endif // FIRST_BRIGHTNESS
+const uint8_t brightnessList[] = {64, 96, 8, 16, 32, 128};
+#else // BRIGHTER
+#  ifndef FIRST_BRIGHTNESS
+#  define FIRST_BRIGHTNESS 32
+#  endif // FIRST_BRIGHTNESS
 const uint8_t brightnessList[] = { FIRST_BRIGHTNESS, 64, 96, 8, 16, 128};
+#endif // BRIGHTER
+
 uint8_t brightnessCursor = 0;
 
 struct VestPixels : public PixelMap {
@@ -313,10 +326,46 @@ void pushBrightness(void) {
   info("Brightness set to %u", brightnessVal);
 }
 
-void doButtons(NetworkPlayer& player) {
+void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
+
+  static uint8_t buttonLockState = 0;
+  static uint32_t lastUnlockTime = 0;
+
+  if (buttonLockState == 4 && currentMillis > lastUnlockTime + 10000) {
+    buttonLockState = 0;
+  }
+
+  const uint8_t btn0 = buttonStatus(0);
+  const uint8_t btn1 = buttonStatus(1);
+  const uint8_t btn2 = buttonStatus(2);
+  const uint8_t btn3 = buttonStatus(3);
   
+  if (buttonLockState == 0 && btn0 == BTN_RELEASED) {
+    buttonLockState++;
+    return;
+  }
+  if (buttonLockState == 1 && btn3 == BTN_RELEASED) {
+    buttonLockState++;
+    return;
+  }
+  if (buttonLockState == 2 && btn2 == BTN_RELEASED) {
+    buttonLockState++;
+    return;
+  }
+  if (buttonLockState == 3 && btn1 == BTN_RELEASED) {
+    buttonLockState++;
+    lastUnlockTime = currentMillis;
+    return;
+  }
+
+  if (buttonLockState < 4) {
+    return;
+  }
+
+  lastUnlockTime = currentMillis;
+ 
   // Check the mode button (for switching between effects)
-  switch (buttonStatus(0)) {
+  switch (btn0) {
     case BTN_RELEASED:
       player.stopSpecial();
       player.next();
@@ -327,7 +376,7 @@ void doButtons(NetworkPlayer& player) {
   }
 
   // Check the brightness adjust button
-  switch (buttonStatus(1)) {
+  switch (btn1) {
     case BTN_RELEASED:
       brightnessCursor++;
       pushBrightness();
@@ -340,7 +389,7 @@ void doButtons(NetworkPlayer& player) {
   }
 
   // Check the wifi adjust button
-  switch (buttonStatus(2)) {
+  switch (btn2) {
     case BTN_RELEASED:
       player.stopSpecial();
       player.showStatus(!player.isShowingStatus());
@@ -352,7 +401,7 @@ void doButtons(NetworkPlayer& player) {
   }
 
   // Check the special button
-  switch (buttonStatus(3)) {
+  switch (btn3) {
     case BTN_RELEASED:
       info("SPECIAL!");
       player.handleSpecial();
@@ -384,7 +433,7 @@ void loop()
 {
   uint32_t currentMillis = (uint32_t)millis();
   updateButtons(currentMillis); // read, debounce, and process the buttons
-  doButtons(player); // perform actions based on button state
+  doButtons(player, currentMillis); // perform actions based on button state
   network.poll();
   player.render();
   FastLED.show();
