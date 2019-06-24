@@ -20,7 +20,6 @@ To install Arduino and dfsparks code on Ubuntu:
     tar -xf arduino-1.6.10-linux64.tar.xz
     mkdir -p ~/Arduino/libraries
     cd ~/Arduino/libraries
-    git clone https://igor_c@bitbucket.org/discofish/dfsparks.git DFSparks
     git clone https://github.com/FastLED/FastLED
     ~/arduino-1.6.10/arduino &
     Open File/Preferences, and add to Additional Boards:
