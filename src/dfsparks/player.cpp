@@ -11,7 +11,7 @@ namespace dfsparks {
 Player::Player(Pixels& pixels) : repertoire_(pixels), playlist_(repertoire_), effect_(&playlist_.currentEffect()) {
   pixels_ = &pixels;
 }
-Player::~Player() { 
+Player::~Player() {
 }
 
 void Player::render() {
@@ -32,7 +32,7 @@ void Player::render() {
         doPlay(playlist_.random(), LOW_PRIORITY);
         break;
       case play_forever:
-        remaining_time_ = effect_->preferredDuration(); 
+        remaining_time_ = effect_->preferredDuration();
         break;
     }
   }
@@ -121,18 +121,18 @@ void NetworkPlayer::doRenderStatus() {
   uint32_t color = 0x000000;
 
   switch(netwrk.status()) {
-    case Network::disconnected: 
-    case Network::disconnecting: 
-      color = 0xff6600; 
+    case Network::disconnected:
+    case Network::disconnecting:
+      color = 0xff6600;
       break;
-    case Network::connecting: 
+    case Network::connecting:
       color = t % 500 < 250 ? 0 : 0xff6600;
       break;
-    case Network::connected: 
-      color = t - rx_time_ < 100 ? 0 : 0x00ff00; 
+    case Network::connected:
+      color = t - rx_time_ < 100 ? 0 : 0x00ff00;
       break;
-    case Network::connection_failed: 
-      color = 0xff0000; 
+    case Network::connection_failed:
+      color = 0xff0000;
       break;
   }
   pixels().fill(color);
@@ -272,7 +272,7 @@ void NetworkPlayer::onReceived(Network&, const Message::Frame& fr) {
         altname = "glitter";
         doPlay(*findEffect(altname), LOW_PRIORITY, fr.elapsed_ms, rx_timeout_, fr.hue_med ? fr.hue_med : 255);
       } else {
-        altname = "radiaterainbow";        
+        altname = "rainbow";
         doPlay(*findEffect(altname), LOW_PRIORITY, fr.elapsed_ms, rx_timeout_, 0);
       }
       info("Can't play unknown effect '%s', using '%s' instead", fr.pattern, altname);

@@ -54,7 +54,7 @@ public:
 
 protected:
   Effect* findEffect(const char *name) const;
-  
+
   void doPlay(Effect &ef, int priority);
   void doPlay(Effect &ef, int priority, int32_t elapsed, int32_t remaining, uint8_t cycleHue);
 

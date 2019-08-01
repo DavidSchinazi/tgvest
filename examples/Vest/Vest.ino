@@ -17,7 +17,6 @@ using namespace dfsparks;
 
 #define BUTTON_LOCK 0
 
-
 // Data output to LEDs is on pin 5
 #define LED_PIN  5
 
