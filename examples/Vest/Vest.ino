@@ -15,6 +15,8 @@
 
 using namespace dfsparks;
 
+#define BUTTON_LOCK 0
+
 
 // Data output to LEDs is on pin 5
 #define LED_PIN  5
@@ -327,18 +329,18 @@ void pushBrightness(void) {
 }
 
 void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
+  const uint8_t btn0 = buttonStatus(0);
+  const uint8_t btn1 = buttonStatus(1);
+  const uint8_t btn2 = buttonStatus(2);
+  const uint8_t btn3 = buttonStatus(3);
 
+#if BUTTON_LOCK
   static uint8_t buttonLockState = 0;
   static uint32_t lastUnlockTime = 0;
 
   if (buttonLockState == 4 && currentMillis > lastUnlockTime + 10000) {
     buttonLockState = 0;
   }
-
-  const uint8_t btn0 = buttonStatus(0);
-  const uint8_t btn1 = buttonStatus(1);
-  const uint8_t btn2 = buttonStatus(2);
-  const uint8_t btn3 = buttonStatus(3);
   
   if (buttonLockState == 0 && btn0 == BTN_RELEASED) {
     buttonLockState++;
@@ -363,6 +365,7 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
   }
 
   lastUnlockTime = currentMillis;
+#endif // BUTTON_LOCK
  
   // Check the mode button (for switching between effects)
   switch (btn0) {
