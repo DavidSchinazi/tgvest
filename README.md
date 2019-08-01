@@ -49,10 +49,10 @@ To implement new effect:
 
 	1. Create a file that contains effect source, e.g. src/dfsparks/effects/coolstuff.h
 	(you may keep it header-only or add a .cpp file as well)
-	2. Use one of the existing files as an example. At a minimum, you need to extend 
+	2. Use one of the existing files as an example. At a minimum, you need to extend
 		the Effect class and implement 'doRender' method.
-	3. doRender gets Pixels object representing a viewport mapped to device pixels. 
-		You can get viewport width and height from the pixels object. You can also find 
+	3. doRender gets Pixels object representing a viewport mapped to device pixels.
+		You can get viewport width and height from the pixels object. You can also find
 		out viewport coordinates of each pixel by calling 'coords' method of the Pixels
 		object. timeElapsed() method on the effect itself lets you query the time.
 		All times are in milliseconds, stored as int32_t.
@@ -87,15 +87,20 @@ Uploading sketches on OSX
 
 To upload sketches to ESP8266 board from Arduino IDE on OSX:
 
-	1. Install ESP8266 board. Go to Arduino->Preferences->Settings; Additional board manager URLs
-	2. Add http://arduino.esp8266.com/stable/package_esp8266com_index.json
-	3. Install ESP8266 board
-	4. Install USB to UART drivers. Required drivers seem to be different for different 
-	   board flavours. 
-	   - For LoLin boards this worked: 
-			http://www.codenuke.net/2015/01/nodemcu-install-ch340-usb-to-serial-for-yosemite.html
-	   - For noname board I got from Amazon this worked: 
-			https://www.silabs.com/products/mcu/Pages/USBtoUARTBridgeVCPDrivers.aspx (/dev/cu.SLAB_USBtoUART)
-	5. Use NodeMCU 1.0 (ESP-12E) board and port corresponding to USB driver
-	6. Set serial monitor to 115200 baud
-
+1. Install ESP8266 board
+   - Go to Arduino->Preferences->Settings; Additional board manager URLs
+   - Add https://arduino.esp8266.com/stable/package_esp8266com_index.json
+   - Go to Tools->Board->Board Manager
+   - Search for ESP8266
+   - Select version 2.3.0 (2.5.2 does not work with FastLED 3.001.003)
+   - Install ESP8266 board
+1. Install USB to UART drivers. Required drivers seem to be different for different
+   board flavours.
+   - On MacOS Mojave, this worked:
+		https://drive.google.com/file/d/1lUYkw-mCOekJjY1MVA5YuEbERHNWNCZW/view
+   - On macOS Sierra, for LoLin boards this worked:
+		http://www.codenuke.net/2015/01/nodemcu-install-ch340-usb-to-serial-for-yosemite.html
+   - On macOS Sierra, for noname board I got from Amazon this worked:
+		https://www.silabs.com/products/mcu/Pages/USBtoUARTBridgeVCPDrivers.aspx (/dev/cu.SLAB_USBtoUART)
+1. Use NodeMCU 1.0 (ESP-12E) board and port corresponding to USB driver
+1. Set serial monitor to 115200 baud, 80MHz, 4M (3M SPIFFS).
