@@ -272,7 +272,7 @@ void NetworkPlayer::onReceived(Network&, const Message::Frame& fr) {
     const int32_t remaining = ef->preferredDuration() - fr.elapsed_ms;
     if (ef) {
       doPlay(*ef, LOW_PRIORITY, fr.elapsed_ms, remaining, 0);
-      playlist_.select(index);
+      playlistSelect(index);
     }
     else {
       const char *altname = 0;

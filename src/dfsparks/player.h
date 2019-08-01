@@ -59,6 +59,8 @@ protected:
   void doPlay(Effect &ef, int priority);
   void doPlay(Effect &ef, int priority, int32_t elapsed, int32_t remaining, uint8_t cycleHue);
 
+  void playlistSelect(int index) { playlist_.select(index); }
+
   uint8_t specialMode_ = 0;
 
 private:
@@ -66,9 +68,7 @@ private:
   virtual void doRenderSpecial();
 
   Repertoire repertoire_;
-protected:
   Playlist playlist_;
-private:
   Effect *effect_ = nullptr;
   int32_t elapsed_time_;
   int32_t remaining_time_;
