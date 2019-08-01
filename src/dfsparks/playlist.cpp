@@ -35,13 +35,13 @@ Repertoire::Repertoire(Pixels& pixels) {
     new EffectInfo(new Rainbow(), "rainbow"),
 #if !CAMPSIGN
     new EffectInfo(new Threesine(), "threesine"),
+    new EffectInfo(new Glitter(), "glitter"),
 #endif // !CAMPSIGN
     new EffectInfo(new Plasma(), "plasma"),
 #if !CAMPSIGN
-    new EffectInfo(new Rider(), "rider"),
+    // new EffectInfo(new Rider(), "rider"), LINES GOING SIDEWAYS, NOT COOL
     new EffectInfo(new Flame(pixels), "flame"),
-    new EffectInfo(new Glitter(), "glitter"),
-    new EffectInfo(new Slantbars(), "slantbars")
+    // new EffectInfo(new Slantbars(), "slantbars"), DIAGONAL LINES, NOT COOL
 #endif // !CAMPSIGN
   };
   size_ = sizeof(all)/sizeof(*all);

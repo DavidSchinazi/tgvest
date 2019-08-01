@@ -66,7 +66,8 @@ void Player::doPlay(Effect &ef, int priority, int32_t elapsed, int32_t remaining
   if (priority_ > LOW_PRIORITY) {
     showStatus_ = false;
   }
-  info("player %p selected effect %s", this, effectName());
+  info("player %p selected effect %s priority %d elapsed %d remaining %d hue %d",
+       this, effectName(), priority, elapsed, remaining, cycle_hue);
 }
 
 void Player::doRenderStatus() {
@@ -263,17 +264,18 @@ void NetworkPlayer::onReceived(Network&, const Message::Frame& fr) {
   int32_t currTime = timeMillis();
   if (mode_ == SLAVE) {
     Effect *ef = findEffect(fr.pattern);
+    const int32_t remaining = ef->preferredDuration() - fr.elapsed_ms;
     if (ef) {
-      doPlay(*ef, LOW_PRIORITY, fr.elapsed_ms, rx_timeout_, 0);
+      doPlay(*ef, LOW_PRIORITY, fr.elapsed_ms, remaining, 0);
     }
     else {
       const char *altname = 0;
       if (fr.hue_dev < 50) {
         altname = "glitter";
-        doPlay(*findEffect(altname), LOW_PRIORITY, fr.elapsed_ms, rx_timeout_, fr.hue_med ? fr.hue_med : 255);
+        doPlay(*findEffect(altname), LOW_PRIORITY, fr.elapsed_ms, remaining, fr.hue_med ? fr.hue_med : 255);
       } else {
         altname = "rainbow";
-        doPlay(*findEffect(altname), LOW_PRIORITY, fr.elapsed_ms, rx_timeout_, 0);
+        doPlay(*findEffect(altname), LOW_PRIORITY, fr.elapsed_ms, remaining, 0);
       }
       info("Can't play unknown effect '%s', using '%s' instead", fr.pattern, altname);
     }
