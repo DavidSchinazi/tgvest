@@ -84,10 +84,14 @@ const char *Player::effectName() const {
   return name;
 }
 
-Effect* Player::findEffect(const char *name) const {
+Effect* Player::findEffect(const char *name, int *index) const {
   Effect* ef = nullptr;
-  repertoire_.find(name, &ef, nullptr);
+  repertoire_.find(name, &ef, index);
   return ef;
+}
+
+Effect* Player::findEffect(const char *name) const {
+  return findEffect(name, nullptr);
 }
 
 // --------------------------------------------------------------------
@@ -263,10 +267,12 @@ void NetworkPlayer::doRenderSpecial() {
 void NetworkPlayer::onReceived(Network&, const Message::Frame& fr) {
   int32_t currTime = timeMillis();
   if (mode_ == SLAVE) {
-    Effect *ef = findEffect(fr.pattern);
+    int index = 0;
+    Effect *ef = findEffect(fr.pattern, &index);
     const int32_t remaining = ef->preferredDuration() - fr.elapsed_ms;
     if (ef) {
       doPlay(*ef, LOW_PRIORITY, fr.elapsed_ms, remaining, 0);
+      playlist_.select(index);
     }
     else {
       const char *altname = 0;
