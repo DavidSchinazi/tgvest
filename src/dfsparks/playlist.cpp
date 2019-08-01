@@ -24,7 +24,7 @@ struct EffectInfo {
   ~EffectInfo() {
     delete effect;
   }
-  Effect* effect; 
+  Effect* effect;
   const char *name;
 };
 
@@ -32,7 +32,7 @@ Repertoire::Repertoire(Pixels& pixels) {
   EffectInfo* all[] = {
 //    new EffectInfo(new NullEffect(), "_none"),
 //    new EffectInfo(new Blink(), "slowblink"), BLINKING RED AND GREEN IS NOT COOL
-    new EffectInfo(new Rainbow(), "radiaterainbow"),
+    new EffectInfo(new Rainbow(), "rainbow"),
 #if !CAMPSIGN
     new EffectInfo(new Threesine(), "threesine"),
 #endif // !CAMPSIGN
@@ -46,7 +46,7 @@ Repertoire::Repertoire(Pixels& pixels) {
   };
   size_ = sizeof(all)/sizeof(*all);
   effects_ = new EffectInfo*[size_];
-  memcpy(effects_, all, sizeof(all));  
+  memcpy(effects_, all, sizeof(all));
 }
 
 Repertoire::~Repertoire() {
@@ -71,10 +71,10 @@ bool Repertoire::find(const char *name, Effect** effect, int* index) const {
         *effect = effects_[i]->effect;
       }
       if (index) {
-        *index = i;          
+        *index = i;
       }
       return true;
-    }      
+    }
   }
   return false;
 }
@@ -86,10 +86,10 @@ bool Repertoire::find(const Effect &ef, const char** name, int* index) const {
           *name = effects_[i]->name;
         }
         if (index) {
-          *index = i;          
+          *index = i;
         }
         return true;
-    }      
+    }
   }
   return false;
 }
@@ -103,7 +103,7 @@ Playlist::Playlist(const Repertoire& repertoire, const char *effectNames[]) {
     while((name = effectNames[ni++])) {
       int ri;
       if (repertoire.find(name, nullptr, &ri)) {
-        ++size_;  
+        ++size_;
       }
     }
     effects_ = new Effect*[size_];
@@ -131,7 +131,7 @@ Playlist::Playlist(const Repertoire& repertoire, const char *effectNames[]) {
         effects_[pi++] = repertoire.effect(ri);
       }
     }
-    assert(pi == size_);    
+    assert(pi == size_);
   }
 }
 
@@ -151,12 +151,12 @@ Playlist::Playlist(const Repertoire& repertoire, double timeShare) {
       effects_[pi++] = repertoire.effect(ri);
     }
   }
-  assert(pi == usedSize);    
+  assert(pi == usedSize);
   Effect *noEffect = repertoire.effect(0);
   while(pi < size_) {
     effects_[pi++] = noEffect;
   }
-  assert(pi == size_);    
+  assert(pi == size_);
 }
 
 Playlist::~Playlist() {
@@ -164,18 +164,18 @@ Playlist::~Playlist() {
 }
 
 Effect& Playlist::next() {
-  track_ = track_ < size_ - 1 ? track_ + 1 : 0; 
-  return currentEffect(); 
+  track_ = track_ < size_ - 1 ? track_ + 1 : 0;
+  return currentEffect();
 }
 
 Effect& Playlist::prev() {
-  track_ = track_ > 0 ? track_ - 1 : size_ - 1; 
-  return currentEffect(); 
+  track_ = track_ > 0 ? track_ - 1 : size_ - 1;
+  return currentEffect();
 }
 
 Effect& Playlist::random() {
   track_ = ::rand() % size_;
-  return currentEffect(); 
+  return currentEffect();
 }
 
 Effect& Playlist::select(int i) {
@@ -183,7 +183,7 @@ Effect& Playlist::select(int i) {
   if (track_ < 0) {
     track_ += size_;
   }
-  return currentEffect(); 
+  return currentEffect();
 }
 
 } // namespace dfsparks
