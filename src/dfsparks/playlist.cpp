@@ -33,11 +33,20 @@ Repertoire::Repertoire(Pixels& pixels) {
 //    new EffectInfo(new NullEffect(), "_none"),
 //    new EffectInfo(new Blink(), "slowblink"), BLINKING RED AND GREEN IS NOT COOL
     new EffectInfo(new Rainbow(), "rainbow"),
+    new EffectInfo(new SpinPlasma(OCPOcean), "sp-ocean"),
+    new EffectInfo(new SpinPlasma(OCPHeat), "sp-heat"),
 #if !CAMPSIGN
     new EffectInfo(new Threesine(), "threesine"),
+#endif // !CAMPSIGN
+    new EffectInfo(new SpinPlasma(OCPLava), "sp-lava"),
+    new EffectInfo(new SpinPlasma(OCPRainbow), "sp-rainbow"),
+#if !CAMPSIGN
     new EffectInfo(new Glitter(), "glitter"),
 #endif // !CAMPSIGN
+    new EffectInfo(new SpinPlasma(OCPParty), "sp-party"),
+    new EffectInfo(new SpinPlasma(OCPCloud), "sp-cloud"),
     new EffectInfo(new Plasma(), "plasma"),
+    new EffectInfo(new SpinPlasma(OCPForest), "sp-forest"),
 #if !CAMPSIGN
     // new EffectInfo(new Rider(), "rider"), LINES GOING SIDEWAYS, NOT COOL
     new EffectInfo(new Flame(pixels), "flame"),
