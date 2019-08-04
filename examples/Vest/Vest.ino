@@ -371,6 +371,7 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
     case BTN_RELEASED:
       player.stopSpecial();
       player.next();
+      player.cycleAll();
       break;
 
     case BTN_LONGPRESS: 
@@ -390,12 +391,13 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
       break;
   }
 
-  // Check the wifi adjust button
+  // Check the back button
   switch (btn2) {
     case BTN_RELEASED:
       player.stopSpecial();
-      player.showStatus(!player.isShowingStatus());
-      info("Toggled status, %d", player.isShowingStatus());
+      player.prev();
+      player.loopOne();
+      info("Back button has been hit");
       break;
 
     case BTN_LONGPRESS: 
