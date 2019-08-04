@@ -141,6 +141,16 @@ void NetworkPlayer::doRenderStatus() {
       break;
   }
   pixels().fill(color);
+  const int32_t pixelCount = pixels().count();
+  const int32_t w = pixels().width();
+  const int32_t h = pixels().height();
+  for (int i = 0; i < pixelCount; i++) {
+    int32_t x, y;
+    pixels().coords(i, &x, &y);
+    if ((x % 5) == 1 || (y % 5) == 1) {
+      pixels().setColor(i, 0xff00ff); // purple
+    }
+  }
 }
 
 void NetworkPlayer::doRenderSpecial() {
@@ -219,6 +229,10 @@ void NetworkPlayer::doRenderSpecial() {
     }
     return;
   }
+  if (specialMode_ == 2) {
+    doRenderStatus();
+    return;
+  }
 #if 0
   const int32_t pixelCount = pixels().count();
   const int32_t greenPixel = (t / 100) % pixelCount;
@@ -232,13 +246,13 @@ void NetworkPlayer::doRenderSpecial() {
 #endif // 0
   uint32_t color = 0x000000; // black
   switch(specialMode_) {
-    case 2:
+    case 3:
       color = 0x000000; // black
       break;
-    case 3:
-      color = 0xffffff; // white
-      // color = 0xff00ff; // purple
-      break;
+    // case 3:
+    //   color = 0xffffff; // white
+    //   // color = 0xff00ff; // purple
+    //   break;
     case 4:
       color = 0xff0000; // red
       break;
