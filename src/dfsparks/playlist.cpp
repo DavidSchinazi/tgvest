@@ -35,9 +35,9 @@ Repertoire::Repertoire(Pixels& pixels) {
     new EffectInfo(new Rainbow(), "rainbow"),
     new EffectInfo(new SpinPlasma(OCPOcean), "sp-ocean"),
     new EffectInfo(new SpinPlasma(OCPHeat), "sp-heat"),
-#if !CAMPSIGN
+#if !CAMPSIGN && !ROPELIGHT
     new EffectInfo(new Threesine(), "threesine"),
-#endif // !CAMPSIGN
+#endif // !CAMPSIGN && !ROPELIGHT
     new EffectInfo(new SpinPlasma(OCPLava), "sp-lava"),
     new EffectInfo(new SpinPlasma(OCPRainbow), "sp-rainbow"),
 #if !CAMPSIGN
@@ -47,11 +47,11 @@ Repertoire::Repertoire(Pixels& pixels) {
     new EffectInfo(new SpinPlasma(OCPCloud), "sp-cloud"),
     new EffectInfo(new Plasma(), "plasma"),
     new EffectInfo(new SpinPlasma(OCPForest), "sp-forest"),
-#if !CAMPSIGN
+#if !CAMPSIGN && !ROPELIGHT
     // new EffectInfo(new Rider(), "rider"), LINES GOING SIDEWAYS, NOT COOL
     new EffectInfo(new Flame(pixels), "flame"),
     // new EffectInfo(new Slantbars(), "slantbars"), DIAGONAL LINES, NOT COOL
-#endif // !CAMPSIGN
+#endif // !CAMPSIGN && !ROPELIGHT
   };
   size_ = sizeof(all)/sizeof(*all);
   effects_ = new EffectInfo*[size_];

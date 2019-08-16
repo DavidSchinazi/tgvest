@@ -7,6 +7,10 @@
 #define CAMPSIGN 0
 #endif // CAMPSIGN
 
+#ifndef ROPELIGHT
+#define ROPELIGHT 0
+#endif // ROPELIGHT
+
 namespace dfsparks {
 
 struct EffectInfo;
