@@ -4,12 +4,18 @@
 //   ZIP file https://github.com/FastLED/FastLED/archive/master.zip
 //
 
+#if !defined(ESP8266) && !defined(ESP32)
+#error "Unexpected board"
+#endif
+
 // fixes flickering: https://github.com/FastLED/FastLED/issues/306
 #define FASTLED_ALLOW_INTERRUPTS 0
 
+#ifdef ESP8266
 // you need this line or the feather huzzah or LoLin nodecmu pins will not be mapped properly
 #define FASTLED_ESP8266_RAW_PIN_ORDER
-#define ESP8266
+#endif // ESP8266
+
 #include <FastLED.h>
 #include <DFSparks.h>
 
@@ -17,8 +23,11 @@ using namespace dfsparks;
 
 #define BUTTON_LOCK 0
 
-// Data output to LEDs is on pin 5
+#if defined(ESP32)
+#define LED_PIN  26
+#elif defined(ESP8266)
 #define LED_PIN  5
+#endif
 
 // Vest color order (Green/Red/Blue)
 #define COLOR_ORDER GRB
@@ -261,9 +270,18 @@ struct VestPixels : public PixelMap {
 unsigned long buttonEvents[NUMBUTTONS];
 uint8_t buttonStatuses[NUMBUTTONS];
 
-
+#if defined(ESP8266)
 Esp8266Network network("FISHLIGHT", "155155155");
 //Esp8266Network network("detour", "thebeatenpath");
+#elif defined(ESP32)
+class FakeNetwork : public Network {
+  void doConnection() {}
+  int doReceive(void *buf, size_t bufsize) { return 0; }
+  int doBroadcast(void *buf, size_t bufsize) { return 0; }
+};
+FakeNetwork network;
+#endif
+
 NetworkPlayer player(pixels, network);
 
 void updateButtons(uint32_t currentMillis) {

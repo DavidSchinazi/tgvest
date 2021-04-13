@@ -80,21 +80,23 @@ To flash new firmware onto NodeMCU:
         nodemcu-master-7-modules-2016-08-14-10-43-06-float.bin
 
 
-Uploading sketches on OSX
+Uploading sketches on macOS
 -------------------------
 
 (this is generic stuff not specific to DFSparks library)
 
-To upload sketches to ESP8266 board from Arduino IDE on OSX:
+To upload sketches to ESP8266 and ESP32 board from Arduino IDE on macOS:
 
-1. Install ESP8266 board
+1. Install ESP8266 and ESP32 boards
    - Go to Arduino->Preferences->Settings; Additional board manager URLs
    - Add https://arduino.esp8266.com/stable/package_esp8266com_index.json
+   - Add https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
    - Go to Tools->Board->Board Manager
-   - Search for ESP8266
-   - Select version 2.3.0 (2.5.2 does not work with FastLED 3.001.003)
-   - Install ESP8266 board
-1. Install USB to UART drivers. Required drivers seem to be different for different
+   - Search for ESP8266, select latest version (tested with 2.7.4), install
+   - Search for ESP32, select latest version (tested with 1.0.6), install
+   - (Note that this was last tested with Arduino 1.8.13 and FastLED 3.4.0)
+
+1. For ESP8266, install USB to UART drivers. Required drivers seem to be different for different
    board flavours.
    - On MacOS Mojave, this worked:
 		https://drive.google.com/file/d/1lUYkw-mCOekJjY1MVA5YuEbERHNWNCZW/view
@@ -102,5 +104,9 @@ To upload sketches to ESP8266 board from Arduino IDE on OSX:
 		http://www.codenuke.net/2015/01/nodemcu-install-ch340-usb-to-serial-for-yosemite.html
    - On macOS Sierra, for noname board I got from Amazon this worked:
 		https://www.silabs.com/products/mcu/Pages/USBtoUARTBridgeVCPDrivers.aspx (/dev/cu.SLAB_USBtoUART)
-1. Use NodeMCU 1.0 (ESP-12E) board and port corresponding to USB driver
+   - On macOS Big Sur, the drivers above seemed to still work.
+   - On macOS Big Sur, ESP32 seems to be supported out of the box.
+1. Select board and port
+   - For ESP8266, use "NodeMCU 1.0 (ESP-12E)" board and port corresponding to USB driver
+   - For ESP32, use "ESP32 Pico Kit" board and port corresponding to USB driver
 1. Set serial monitor to 115200 baud, 80MHz, 4M (3M SPIFFS).
