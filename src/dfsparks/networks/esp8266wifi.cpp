@@ -1,5 +1,5 @@
 #include "dfsparks/networks/esp8266wifi.h"
-#ifdef ESP8266
+#if DF_ESP8266WIFI
 #include <WiFiUdp.h>
 #include "dfsparks/log.h"
 
@@ -21,23 +21,27 @@ void Esp8266Network::doConnection() {
   case Network::connecting:
     if (needToBegin_) {
         info("Connecting to %s...", creds_.ssid);
-        WiFi.begin(creds_.ssid, creds_.pass);            
-        needToBegin_ = false;     
+        WiFi.begin(creds_.ssid, creds_.pass);
+        needToBegin_ = false;
     }
     switch(WiFi.status()) {
       case WL_CONNECTED: {
         IPAddress mcaddr;
         mcaddr.fromString(multicast_addr);
+#if defined(ESP8266)
         int res = udp_.beginMulticast(WiFi.localIP(), mcaddr, udp_port);
+#elif defined(ESP32)
+        int res = udp_.beginMulticast(mcaddr, udp_port);
+#endif
         if (!res) {
           error("Can't begin multicast on port %d, multicast group %s", udp_port,
                 multicast_addr);
           goto err;
         }
         IPAddress ip = WiFi.localIP();
-        info("Connected, IP: %d.%d.%d.%d, bound to port %d, multicast group: %s", 
+        info("Connected, IP: %d.%d.%d.%d, bound to port %d, multicast group: %s",
           ip[0], ip[1], ip[2], ip[3], udp_port, multicast_addr);
-        setStatus(Network::connected);        
+        setStatus(Network::connected);
       }
       break;
 
@@ -51,7 +55,7 @@ void Esp8266Network::doConnection() {
         if (timeMillis() - last_t > 500) {
           info("Still connecting... %d (CNTD: %d, DCNTD: %d, IDLE: %d)", WiFi.status(), WL_CONNECTED, WL_DISCONNECTED, WL_IDLE_STATUS);
           last_t = timeMillis();
-        }         
+        }
       }
     }
     break;
@@ -60,8 +64,8 @@ void Esp8266Network::doConnection() {
     switch(WiFi.status()) {
       case WL_DISCONNECTED:
         info("Disconnected from %s", creds_.ssid);
-        setStatus(Network::disconnected);    
-        break;      
+        setStatus(Network::disconnected);
+        break;
       case WL_CONNECTED:
         WiFi.disconnect();
         break;
@@ -96,4 +100,4 @@ int Esp8266Network::doBroadcast(void *buf, size_t bufsize) {
 
 } // namespace dfsparks
 
-#endif /* ESP8266 */
+#endif // DF_ESP8266WIFI

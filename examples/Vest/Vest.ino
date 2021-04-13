@@ -270,17 +270,8 @@ struct VestPixels : public PixelMap {
 unsigned long buttonEvents[NUMBUTTONS];
 uint8_t buttonStatuses[NUMBUTTONS];
 
-#if defined(ESP8266)
 Esp8266Network network("FISHLIGHT", "155155155");
 //Esp8266Network network("detour", "thebeatenpath");
-#elif defined(ESP32)
-class FakeNetwork : public Network {
-  void doConnection() {}
-  int doReceive(void *buf, size_t bufsize) { return 0; }
-  int doBroadcast(void *buf, size_t bufsize) { return 0; }
-};
-FakeNetwork network;
-#endif
 
 NetworkPlayer player(pixels, network);
 

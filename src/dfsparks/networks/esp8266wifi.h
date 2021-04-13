@@ -1,8 +1,16 @@
-#ifdef ESP8266
+#ifndef DF_ESP8266WIFI
+#define DF_ESP8266WIFI (defined(ESP8266) || defined(ESP32))
+#endif // DF_ESP8266WIFI
+
+#if DF_ESP8266WIFI
 #ifndef DFSPARKS_NETWORK_ESP8266_H
 #define DFSPARKS_NETWORK_ESP8266_H
 #include "dfsparks/network.h"
+#if defined(ESP8266)
 #include <ESP8266WiFi.h>
+#elif defined(ESP32)
+#include <WiFi.h>
+#endif
 #include <WiFiUdp.h>
 
 namespace dfsparks {
@@ -28,5 +36,5 @@ private:
 
 } // namespace dfsparks
 
-#endif /* DFSPARKS_NETWORK_ESP8266UDP_H */
-#endif /* ESP8266 */
+#endif // DFSPARKS_NETWORK_ESP8266UDP_H
+#endif // DF_ESP8266WIFI
