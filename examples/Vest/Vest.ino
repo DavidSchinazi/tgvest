@@ -29,10 +29,27 @@ using namespace dfsparks;
 #define LED_PIN  5
 #endif
 
+#ifdef ESP32
+#define ATOM_MATRIX_SCREEN 1
+#else // ESP32
+#define ATOM_MATRIX_SCREEN 0
+#endif // ESP32
+
+#ifdef ATOM_MATRIX_SCREEN
+#define ATOM_SCREEN_NUM_LEDS 25
+CRGB atomScreenLEDs[ATOM_SCREEN_NUM_LEDS] = {};
+CFastLED atomScreenFastLED;
+#endif // ATOM_MATRIX_SCREEN
+
 // Vest color order (Green/Red/Blue)
 #define COLOR_ORDER GRB
 #define CHIPSET     WS2812B
 
+#if defined(ESP32)
+#define NUMBUTTONS 1
+#define ATOMBUTTON 39
+uint8_t buttonPins[NUMBUTTONS] = {ATOMBUTTON};
+#elif defined(ESP8266)
 // D0 = GPIO 16
 // D1 = GPIO  5
 // D2 = GPIO  4
@@ -56,6 +73,7 @@ using namespace dfsparks;
 #define WIFIBUTTON 12
 #define SPECIALBUTTON 0
 uint8_t buttonPins[NUMBUTTONS] = {MODEBUTTON, BRIGHTNESSBUTTON, WIFIBUTTON, SPECIALBUTTON};
+#endif // ESPxx
 
 #define BTN_IDLE 0
 #define BTN_DEBOUNCING 1
@@ -337,6 +355,30 @@ void pushBrightness(void) {
 }
 
 void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
+#if defined(ESP32)
+#if BUTTON_LOCK
+// TODO ESP32 button lock
+#endif // BUTTON_LOCK
+  const uint8_t btn = buttonStatus(0);
+#if ATOM_MATRIX_SCREEN
+  static const CRGB atomColors[] = {CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow, CRGB::Fuchsia, CRGB::Aqua, CRGB::White, CRGB::Black};
+  static size_t atomColorIndex = 0;
+#endif // ATOM_MATRIX_SCREEN
+  switch (btn) {
+    case BTN_RELEASED:
+#if ATOM_MATRIX_SCREEN
+      atomColorIndex++;
+      atomColorIndex %= (sizeof(atomColors) / sizeof(atomColors[0]));
+      for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
+        atomScreenLEDs[i] = atomColors[atomColorIndex];
+      }
+#endif // ATOM_MATRIX_SCREEN
+      break;
+
+    case BTN_LONGPRESS:
+      break;
+  }
+#elif defined(ESP8266)
   const uint8_t btn0 = buttonStatus(0);
   const uint8_t btn1 = buttonStatus(1);
   const uint8_t btn2 = buttonStatus(2);
@@ -383,7 +425,7 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
       player.cycleAll();
       break;
 
-    case BTN_LONGPRESS: 
+    case BTN_LONGPRESS:
       break;
   }
 
@@ -409,7 +451,7 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
       info("Back button has been hit");
       break;
 
-    case BTN_LONGPRESS: 
+    case BTN_LONGPRESS:
       break;
   }
 
@@ -424,19 +466,8 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
       info("SPECIAL LONG!");
       break;
   }
+#endif // ESPxx
 }
-
-#ifdef ESP32
-#define ATOM_MATRIX_SCREEN 1
-#else // ESP32
-#define ATOM_MATRIX_SCREEN 0
-#endif // ESP32
-
-#ifdef ATOM_MATRIX_SCREEN
-#define ATOM_SCREEN_NUM_LEDS 25
-CRGB atomScreenLEDs[ATOM_SCREEN_NUM_LEDS] = {};
-CFastLED atomScreenFastLED;
-#endif // ATOM_MATRIX_SCREEN
 
 void setup() {
   logLevel = debugLevel;
@@ -457,7 +488,7 @@ void setup() {
   // M5Stack recommends not setting the atom screen brightness greater
   // than 20 to avoid melting the screen/cover over the LEDs.
   atomScreenFastLED.setBrightness(20);
-  for(int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
+  for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
     atomScreenLEDs[i] = CRGB::Red;
   }
 #endif // ATOM_MATRIX_SCREEN
