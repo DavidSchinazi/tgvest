@@ -482,7 +482,7 @@ void setup() {
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(pixels.leds,
                                     sizeof(pixels.leds)/sizeof(*pixels.leds));
 
-#ifdef ATOM_MATRIX_SCREEN
+#if ATOM_MATRIX_SCREEN
   atomScreenFastLED.addLeds<WS2812, /*DATA_PIN=*/27, GRB>(atomScreenLEDs,
                                                           ATOM_SCREEN_NUM_LEDS);
   // M5Stack recommends not setting the atom screen brightness greater
@@ -505,7 +505,7 @@ void loop()
   network.poll();
   player.render();
   FastLED.show();
-#ifdef ATOM_MATRIX_SCREEN
+#if ATOM_MATRIX_SCREEN
   atomScreenFastLED.show();
 #endif // ATOM_MATRIX_SCREEN
 }
