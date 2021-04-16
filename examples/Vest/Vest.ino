@@ -397,31 +397,39 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
 
   if (buttonLockState != 0 && currentMillis > lastButtonTime + lockDelay) {
     buttonLockState = 0;
-    atomScreenClear();
   }
   if (btn == BTN_RELEASED ||  btn == BTN_LONGPRESS) {
     lastButtonTime = currentMillis;
+
+    if (buttonLockState == 0) {
+      buttonLockState++;
+    } else if (buttonLockState == 1) {
+      if (btn == BTN_LONGPRESS) {
+        buttonLockState++;
+      } else {
+        buttonLockState = 0;
+      }
+    } else if (buttonLockState == 2) {
+      if (btn == BTN_RELEASED) {
+        buttonLockState++;
+      } else {
+        buttonLockState = 0;
+      }
+    } else if (buttonLockState == 3) {
+      if (btn == BTN_LONGPRESS) {
+        buttonLockState++;
+      } else {
+        buttonLockState = 0;
+      }
+    }
   }
 
-  if (buttonLockState == 0 && btn == BTN_RELEASED) {
-    buttonLockState++;
+  if (buttonLockState == 0) {
+    atomScreenClear();
+  } else if ((buttonLockState % 2) == 1) {
     atomScreenLong();
-    return;
-  }
-  if (buttonLockState == 1 && btn == BTN_LONGPRESS) {
-    buttonLockState++;
+  } else if (buttonLockState == 2) {
     atomScreenShort();
-    return;
-  }
-  if (buttonLockState == 2 && btn == BTN_RELEASED) {
-    buttonLockState++;
-    atomScreenLong();
-    return;
-  }
-  if (buttonLockState == 3 && btn == BTN_LONGPRESS) {
-    buttonLockState++;
-    atomScreenUnlocked();
-    return;
   }
 
   if (buttonLockState < 4) {
@@ -435,13 +443,13 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
 #if ATOM_MATRIX_SCREEN
       atomColorIndex++;
       atomColorIndex %= (sizeof(atomColors) / sizeof(atomColors[0]));
-      atomScreenUnlocked();
 #endif // ATOM_MATRIX_SCREEN
       break;
 
     case BTN_LONGPRESS:
       break;
   }
+  atomScreenUnlocked();
 #elif defined(ESP8266)
   const uint8_t btn0 = buttonStatus(0);
   const uint8_t btn1 = buttonStatus(1);
