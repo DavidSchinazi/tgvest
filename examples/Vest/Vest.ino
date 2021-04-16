@@ -426,6 +426,18 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
   }
 }
 
+#ifdef ESP32
+#define ATOM_MATRIX_SCREEN 1
+#else // ESP32
+#define ATOM_MATRIX_SCREEN 0
+#endif // ESP32
+
+#ifdef ATOM_MATRIX_SCREEN
+#define ATOM_SCREEN_NUM_LEDS 25
+CRGB atomScreenLEDs[ATOM_SCREEN_NUM_LEDS] = {};
+CFastLED atomScreenFastLED;
+#endif // ATOM_MATRIX_SCREEN
+
 void setup() {
   logLevel = debugLevel;
   
@@ -438,6 +450,18 @@ void setup() {
   // Write FastLED configuration data
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(pixels.leds,
                                     sizeof(pixels.leds)/sizeof(*pixels.leds));
+
+#ifdef ATOM_MATRIX_SCREEN
+  atomScreenFastLED.addLeds<WS2812, /*DATA_PIN=*/27, GRB>(atomScreenLEDs,
+                                                          ATOM_SCREEN_NUM_LEDS);
+  // M5Stack recommends not setting the atom screen brightness greater
+  // than 20 to avoid melting the screen/cover over the LEDs.
+  atomScreenFastLED.setBrightness(20);
+  for(int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
+    atomScreenLEDs[i] = CRGB::Red;
+  }
+#endif // ATOM_MATRIX_SCREEN
+
   pushBrightness();
 }
 
@@ -450,6 +474,9 @@ void loop()
   network.poll();
   player.render();
   FastLED.show();
+#ifdef ATOM_MATRIX_SCREEN
+  atomScreenFastLED.show();
+#endif // ATOM_MATRIX_SCREEN
   delay(10);
   // FastLED.delay(10);
 }
