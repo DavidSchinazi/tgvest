@@ -354,24 +354,88 @@ void pushBrightness(void) {
   info("Brightness set to %u", brightnessVal);
 }
 
+#if ATOM_MATRIX_SCREEN
+static const CRGB atomColors[] = {CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow, CRGB::Fuchsia, CRGB::Aqua, CRGB::White, CRGB::Black};
+static size_t atomColorIndex = 0;
+
+void atomScreenClear() {
+  for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
+    atomScreenLEDs[i] = CRGB::Black;
+  }
+}
+
+void atomScreenLong() {
+  atomScreenClear();
+  for (int i : {0,5,10,15,20,21,22}) {
+    atomScreenLEDs[i] = CRGB::White;
+  }
+}
+
+void atomScreenShort() {
+  atomScreenClear();
+  for (int i : {2,1,0,5,10,11,12,17,22,21,20}) {
+    atomScreenLEDs[i] = CRGB::White;
+  }
+}
+
+void atomScreenUnlocked() {
+  for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
+    atomScreenLEDs[i] = atomColors[atomColorIndex];
+  }
+}
+
+#endif // ATOM_MATRIX_SCREEN
+
+static constexpr uint32_t lockDelay = 10000;
+
 void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
 #if defined(ESP32)
-#if BUTTON_LOCK
-// TODO ESP32 button lock
-#endif // BUTTON_LOCK
   const uint8_t btn = buttonStatus(0);
+#if BUTTON_LOCK
+  static uint8_t buttonLockState = 0;
+  static uint32_t lastButtonTime = 0;
+
+  if (buttonLockState != 0 && currentMillis > lastButtonTime + lockDelay) {
+    buttonLockState = 0;
+    atomScreenClear();
+  }
+  if (btn == BTN_RELEASED ||  btn == BTN_LONGPRESS) {
+    lastButtonTime = currentMillis;
+  }
+
+  if (buttonLockState == 0 && btn == BTN_RELEASED) {
+    buttonLockState++;
+    atomScreenLong();
+    return;
+  }
+  if (buttonLockState == 1 && btn == BTN_LONGPRESS) {
+    buttonLockState++;
+    atomScreenShort();
+    return;
+  }
+  if (buttonLockState == 2 && btn == BTN_RELEASED) {
+    buttonLockState++;
+    atomScreenLong();
+    return;
+  }
+  if (buttonLockState == 3 && btn == BTN_LONGPRESS) {
+    buttonLockState++;
+    atomScreenUnlocked();
+    return;
+  }
+
+  if (buttonLockState < 4) {
+    return;
+  }
+#endif // BUTTON_LOCK
 #if ATOM_MATRIX_SCREEN
-  static const CRGB atomColors[] = {CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow, CRGB::Fuchsia, CRGB::Aqua, CRGB::White, CRGB::Black};
-  static size_t atomColorIndex = 0;
 #endif // ATOM_MATRIX_SCREEN
   switch (btn) {
     case BTN_RELEASED:
 #if ATOM_MATRIX_SCREEN
       atomColorIndex++;
       atomColorIndex %= (sizeof(atomColors) / sizeof(atomColors[0]));
-      for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
-        atomScreenLEDs[i] = atomColors[atomColorIndex];
-      }
+      atomScreenUnlocked();
 #endif // ATOM_MATRIX_SCREEN
       break;
 
@@ -388,7 +452,7 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
   static uint8_t buttonLockState = 0;
   static uint32_t lastUnlockTime = 0;
 
-  if (buttonLockState == 4 && currentMillis > lastUnlockTime + 10000) {
+  if (buttonLockState == 4 && currentMillis > lastUnlockTime + lockDelay) {
     buttonLockState = 0;
   }
   
@@ -488,9 +552,7 @@ void setup() {
   // M5Stack recommends not setting the atom screen brightness greater
   // than 20 to avoid melting the screen/cover over the LEDs.
   atomScreenFastLED.setBrightness(20);
-  for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
-    atomScreenLEDs[i] = CRGB::Red;
-  }
+  atomScreenClear();
 #endif // ATOM_MATRIX_SCREEN
 
   pushBrightness();
