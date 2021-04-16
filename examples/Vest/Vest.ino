@@ -367,14 +367,14 @@ void atomScreenClear() {
 void atomScreenLong() {
   atomScreenClear();
   for (int i : {0,5,10,15,20,21,22}) {
-    atomScreenLEDs[i] = CRGB::White;
+    atomScreenLEDs[i] = CRGB::Gold;
   }
 }
 
 void atomScreenShort() {
   atomScreenClear();
   for (int i : {2,1,0,5,10,11,12,17,22,21,20}) {
-    atomScreenLEDs[i] = CRGB::White;
+    atomScreenLEDs[i] = CRGB::Gold;
   }
 }
 
