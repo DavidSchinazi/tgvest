@@ -477,6 +477,4 @@ void loop()
 #ifdef ATOM_MATRIX_SCREEN
   atomScreenFastLED.show();
 #endif // ATOM_MATRIX_SCREEN
-  delay(10);
-  // FastLED.delay(10);
 }
