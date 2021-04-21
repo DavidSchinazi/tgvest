@@ -1,6 +1,7 @@
 #ifndef DFSPARKS_H
 #define DFSPARKS_H
 
+#include "dfsparks/board.h"
 #include "dfsparks/color.h"
 #include "dfsparks/player.h"
 #include "dfsparks/log.h"
