@@ -10,6 +10,7 @@ void setupButtons();
 void doButtons(NetworkPlayer& player, uint32_t currentMillis);
 void updateButtons(uint32_t currentMillis);
 void pushBrightness(void);
+uint8_t getBrightness();
 
 } // namespace dfsparks
 

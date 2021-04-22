@@ -24,6 +24,8 @@ Esp8266Network network("FISHLIGHT", "155155155");
 
 NetworkPlayer player(pixels, network);
 
+CLEDController* mainVestController = nullptr;
+
 void vestSetup(void) {
   logLevel = debugLevel;
   
@@ -32,7 +34,7 @@ void vestSetup(void) {
   setupButtons();
 
   // Write FastLED configuration data
-  FastLED.addLeds<WS2812B, LED_PIN, GRB>(pixels.leds,
+  mainVestController = &FastLED.addLeds<WS2812B, LED_PIN, GRB>(pixels.leds,
                                     sizeof(pixels.leds)/sizeof(*pixels.leds));
 
 
@@ -45,7 +47,7 @@ void vestLoop(void) {
   doButtons(player, currentMillis); // perform actions based on button state
   network.poll();
   player.render();
-  FastLED.show();
+  mainVestController->showLeds(getBrightness());
 }
 
 } // namespace dfsparks

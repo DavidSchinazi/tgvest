@@ -6,6 +6,7 @@
 namespace dfsparks {
 
 #ifndef BUTTON_LOCK
+// If you want to modify this, change the value in the config.h header.
 #  define BUTTON_LOCK 0
 #endif // BUTTON_LOCK
 
@@ -20,7 +21,6 @@ namespace dfsparks {
 #ifdef ATOM_MATRIX_SCREEN
 #define ATOM_SCREEN_NUM_LEDS 25
 CRGB atomScreenLEDs[ATOM_SCREEN_NUM_LEDS] = {};
-CFastLED atomScreenFastLED;
 #endif // ATOM_MATRIX_SCREEN
 
 #if defined(ESP32)
@@ -90,8 +90,97 @@ const uint8_t brightnessList[] = { FIRST_BRIGHTNESS, 64, 96, 8, 16, 128};
 
 
 #if ATOM_MATRIX_SCREEN
-static const CRGB atomColors[] = {CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow, CRGB::Fuchsia, CRGB::Aqua, CRGB::White, CRGB::Black};
-static size_t atomColorIndex = 0;
+
+enum atomMenuMode {
+    kNext,
+    kPrevious,
+    kBrightness,
+    kSpecial,
+};
+
+atomMenuMode menuMode = kNext;
+
+void nextMode(NetworkPlayer& /*player*/, uint32_t /*currentMillis*/) {
+  switch (menuMode) {
+    case kNext: menuMode = kPrevious; break;
+    case kPrevious: menuMode = kBrightness; break;
+    case kBrightness: menuMode = kSpecial; break;
+    case kSpecial: menuMode = kNext; break;
+  };
+}
+
+void modeAct(NetworkPlayer& player, uint32_t /*currentMillis*/) {
+  switch (menuMode) {
+    case kNext:
+      player.stopSpecial();
+      player.next();
+      player.cycleAll();
+      break;
+    case kPrevious:
+      player.stopSpecial();
+      player.prev();
+      player.loopOne();
+      info("Back button has been hit");
+      break;
+    case kBrightness:
+      brightnessCursor++;
+      pushBrightness();
+      break;
+    case kSpecial:
+      info("SPECIAL!");
+      player.handleSpecial();
+      break;
+  };
+
+}
+
+static const CRGB nextColor = CRGB::Blue;
+static const CRGB menuIconNext[ATOM_SCREEN_NUM_LEDS] = {
+    nextColor, CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black,
+    nextColor, nextColor,   CRGB::Black, CRGB::Black, CRGB::Black,
+    nextColor, nextColor,   nextColor,   CRGB::Black, CRGB::Black,
+    nextColor, nextColor,   CRGB::Black, CRGB::Black, CRGB::Black,
+    nextColor, CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black,
+};
+
+static const CRGB prevColor = CRGB::Red;
+static const CRGB menuIconPrevious[ATOM_SCREEN_NUM_LEDS] = {
+    CRGB::Black, CRGB::Black, prevColor, CRGB::Black, CRGB::Black,
+    CRGB::Black, prevColor,   prevColor, CRGB::Black, CRGB::Black,
+    prevColor,   prevColor,   prevColor, CRGB::Black, CRGB::Black,
+    CRGB::Black, prevColor,   prevColor, CRGB::Black, CRGB::Black,
+    CRGB::Black, CRGB::Black, prevColor, CRGB::Black, CRGB::Black,
+};
+
+static const CRGB menuIconBrightness[ATOM_SCREEN_NUM_LEDS] = {
+    CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black,
+    CRGB::DarkGoldenrod, CRGB::Goldenrod, CRGB::DarkGoldenrod, CRGB::Black, CRGB::Black,
+    CRGB::Goldenrod, CRGB::LightGoldenrodYellow, CRGB::Goldenrod, CRGB::Black, CRGB::Black,
+    CRGB::DarkGoldenrod, CRGB::Goldenrod, CRGB::DarkGoldenrod, CRGB::Black, CRGB::Black,
+    CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black,
+};
+
+static const CRGB specColor = CRGB::Green;
+static const CRGB menuIconSpecial[ATOM_SCREEN_NUM_LEDS] = {
+    specColor,   specColor,   specColor,   CRGB::Black, CRGB::Black,
+    CRGB::Black, CRGB::Black, specColor,   CRGB::Black, CRGB::Black,
+    CRGB::Black, specColor,   CRGB::Black, CRGB::Black, CRGB::Black,
+    CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black,
+    CRGB::Black, specColor,   CRGB::Black, CRGB::Black, CRGB::Black,
+};
+
+void atomScreenUnlocked() {
+  const CRGB* icon = atomScreenLEDs;
+  switch (menuMode) {
+    case kNext: icon = menuIconNext; break;
+    case kPrevious: icon = menuIconPrevious; break;
+    case kBrightness: icon = menuIconBrightness; break;
+    case kSpecial: icon = menuIconSpecial; break;
+  };
+  for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
+    atomScreenLEDs[i] = icon[i];
+  }
+}
 
 void atomScreenClear() {
   for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
@@ -113,11 +202,7 @@ void atomScreenShort() {
   }
 }
 
-void atomScreenUnlocked() {
-  for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
-    atomScreenLEDs[i] = atomColors[atomColorIndex];
-  }
-}
+CLEDController* atomMatrixScreenController = nullptr;
 
 #endif // ATOM_MATRIX_SCREEN
 
@@ -178,11 +263,8 @@ void setupButtons() {
     pinMode(buttonPins[i], INPUT_PULLUP);
   }
 #if ATOM_MATRIX_SCREEN
-  atomScreenFastLED.addLeds<WS2812, /*DATA_PIN=*/27, GRB>(atomScreenLEDs,
+  atomMatrixScreenController = &FastLED.addLeds<WS2812, /*DATA_PIN=*/27, GRB>(atomScreenLEDs,
                                                           ATOM_SCREEN_NUM_LEDS);
-  // M5Stack recommends not setting the atom screen brightness greater
-  // than 20 to avoid melting the screen/cover over the LEDs.
-  atomScreenFastLED.setBrightness(20);
   atomScreenClear();
 #endif // ATOM_MATRIX_SCREEN
 }
@@ -240,12 +322,14 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
   switch (btn) {
     case BTN_RELEASED:
 #if ATOM_MATRIX_SCREEN
-      atomColorIndex++;
-      atomColorIndex %= (sizeof(atomColors) / sizeof(atomColors[0]));
+    modeAct(player, currentMillis);
 #endif // ATOM_MATRIX_SCREEN
       break;
 
     case BTN_LONGPRESS:
+#if ATOM_MATRIX_SCREEN
+    nextMode(player, currentMillis);
+#endif // ATOM_MATRIX_SCREEN
       break;
   }
 #if ATOM_MATRIX_SCREEN
@@ -341,17 +425,24 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
   }
 #endif // ESPxx
 #if ATOM_MATRIX_SCREEN
-  atomScreenFastLED.show();
+  // M5Stack recommends not setting the atom screen brightness greater
+  // than 20 to avoid melting the screen/cover over the LEDs.
+  atomMatrixScreenController->showLeds(20);
 #endif // ATOM_MATRIX_SCREEN
 }
+
+uint8_t brightnessVal = FIRST_BRIGHTNESS;
 
 void pushBrightness(void) {
   if (brightnessCursor >= sizeof(brightnessList) / sizeof(brightnessList[0])) {
     brightnessCursor = 0;
   }
-  const uint8_t brightnessVal = brightnessList[brightnessCursor];
-  FastLED.setBrightness(brightnessVal);
+  brightnessVal = brightnessList[brightnessCursor];
   info("Brightness set to %u", brightnessVal);
+}
+
+uint8_t getBrightness() {
+  return brightnessVal;
 }
 
 } // namespace dfsparks

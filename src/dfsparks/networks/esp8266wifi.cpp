@@ -52,7 +52,7 @@ void Esp8266Network::doConnection() {
 
       default: {
         static int32_t last_t = 0;
-        if (timeMillis() - last_t > 500) {
+        if (timeMillis() - last_t > 5000) {
           info("Still connecting... %d (CNTD: %d, DCNTD: %d, IDLE: %d)", WiFi.status(), WL_CONNECTED, WL_DISCONNECTED, WL_IDLE_STATUS);
           last_t = timeMillis();
         }
