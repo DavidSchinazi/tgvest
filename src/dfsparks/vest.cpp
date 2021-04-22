@@ -1,7 +1,4 @@
-#include "dfsparks/vest.h"
-
-#include "dfsparks/button.h"
-
+#include <DFSparks.h>
 
 #if !defined(ESP8266) && !defined(ESP32)
 #  error "Unexpected board"

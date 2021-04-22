@@ -1,9 +1,6 @@
-#include "dfsparks/button.h"
-#include "dfsparks/log.h"
-#include "dfsparks/vest.h"
+#include <DFSparks.h>
 
 #include <Arduino.h>
-#include <FastLED.h>
 #include <cstdint>
 
 namespace dfsparks {

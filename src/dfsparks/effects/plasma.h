@@ -1,10 +1,6 @@
 #ifndef DFSPARKS_EFFECT_PLASMA_H
 #define DFSPARKS_EFFECT_PLASMA_H
-#include "dfsparks/color.h"
-#include "dfsparks/effect.h"
-#include "dfsparks/math.h"
-
-#include <FastLED.h>
+#include <DFSparks.h>
 
 namespace dfsparks {
 
