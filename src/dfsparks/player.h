@@ -100,6 +100,8 @@ public:
   // deprecated, use setMaster() instead
   void serve() {setMaster();}
 
+  Network& network() const { return netwrk; }
+
 private:
   void onReceived(Network &network, const Message::Frame &frame) final;
   void onStatusChange(Network &) final{};

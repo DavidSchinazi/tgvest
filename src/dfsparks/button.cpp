@@ -169,7 +169,7 @@ static const CRGB menuIconSpecial[ATOM_SCREEN_NUM_LEDS] = {
     CRGB::Black, specColor,   CRGB::Black, CRGB::Black, CRGB::Black,
 };
 
-void atomScreenUnlocked() {
+void atomScreenUnlocked(NetworkPlayer& player, uint32_t /*currentMillis*/) {
   const CRGB* icon = atomScreenLEDs;
   switch (menuMode) {
     case kNext: icon = menuIconNext; break;
@@ -180,6 +180,17 @@ void atomScreenUnlocked() {
   for (int i = 0; i < ATOM_SCREEN_NUM_LEDS; i++) {
     atomScreenLEDs[i] = icon[i];
   }
+
+  // Change top-right Atom matrix screen LED based on network status.
+  CRGB networkColor = CRGB::Blue;
+  switch (player.network().status()) {
+    case Network::disconnected: networkColor = CRGB::Purple; break;
+    case Network::connecting: networkColor = CRGB::Yellow; break;
+    case Network::connected: networkColor = CRGB::Green; break;
+    case Network::disconnecting: networkColor = CRGB::Orange; break;
+    case Network::connection_failed: networkColor = CRGB::Red; break;
+  }
+  atomScreenLEDs[4] = networkColor;
 }
 
 void atomScreenClear() {
@@ -333,7 +344,7 @@ void doButtons(NetworkPlayer& player, uint32_t currentMillis) {
       break;
   }
 #if ATOM_MATRIX_SCREEN
-  atomScreenUnlocked();
+  atomScreenUnlocked(player, currentMillis);
 #endif // ATOM_MATRIX_SCREEN
 #elif defined(ESP8266)
   const uint8_t btn0 = buttonStatus(0);

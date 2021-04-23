@@ -154,8 +154,6 @@ void NetworkPlayer::doRenderStatus() {
 }
 
 void NetworkPlayer::doRenderSpecial() {
-
-
   if (specialMode_ > 6) {
     specialMode_ = 1;
   }
